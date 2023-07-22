@@ -11,13 +11,14 @@ logger = logging.basicConfig(format="[%(asctime)s] %(process)s %(level)s %(messa
 # Get client by id
 @app.get('/client/<client_id>')
 def get_client(client_id):
-    logger.info("Request for client id %(client_id)s received.")
-    if os.path.isfile(CLIENT_FILE_PATH):
-        logger.info("Sending file client id %(client_id)s received.")
-        send_file(CLIENT_FILE_PATH)
+    client_file = f'{CLIENTS_PATH}/{client_id}/{client_id}.ovpn'
+    logger.info(f"Request for client id {client_id} received.")
+    if os.path.isfile(client_file):
+        logger.info(f"Sending file client id {client_id} received.")
+        send_file(client_file)
     else:
-        logger.error("Config file for client id %(client_id)s was not found.")
-        logger.debug("Client file name %(CLIENT_FILE_PATH)s not found.")
+        logger.error(f"Config file for client id {client_id} was not found.")
+        logger.debug(f"Client file name {client_file} not found.")
         abort(404)
 
 # Create new client
@@ -25,14 +26,15 @@ def get_client(client_id):
 def create_client():
     logger.info("Request to create client received.")
     client_id = os.popen(GENSCRIPT).read().strip()
-    logger.info("Client with id %(client_id)s created.")
+    logger.info(f"Client with id {client_id} created.")
     data = {'client_id':client_id}
     return Response(json.dumps(data), status=201, mimetype='application/json') 
 
 @app.delete('/client/<client_id>')
 def revoke_client(client_id):
-    if os.path.isfile(CLIENT_FILE_PATH):
-        os.system("%(RMSCRIPT)s %(client_id)s")
+    client_file = f'{CLIENTS_PATH}/{client_id}/{client_id}.ovpn'
+    if os.path.isfile(client_file):
+        os.system(f"{RMSCRIPT} {client_id}")
     else:
         abort(404)
     return Response(status=200)
