@@ -31,8 +31,11 @@ LOCKFILE=.gen
 
 # Regenerate certs only on the first start 
 if [ ! -f $LOCKFILE ]; then
-    IS_INITIAL="1"
-
+#    IS_INITIAL="1"
+    # Generate initial configs if they are not there yet
+    easyrsa init-pki
+    easyrsa gen-dh
+    # Generate CA
     easyrsa build-ca nopass << EOF
 
 EOF
@@ -58,11 +61,13 @@ EOF4
 
     easyrsa gen-crl
 
+    # Copy scripts
+
     touch $LOCKFILE
 fi
 
 # Copy server keys and certificates
-cp pki/ca.crt pki/issued/MyReq.crt pki/private/MyReq.key pki/crl.pem ta.key /etc/openvpn
+cp pki/dh.pem pki/ca.crt pki/issued/MyReq.crt pki/private/MyReq.key pki/crl.pem ta.key /etc/openvpn
 
 cd "$APP_INSTALL_PATH"
 
@@ -72,12 +77,13 @@ $APP_INSTALL_PATH/version.sh
 # Need to feed key password
 openvpn --config /etc/openvpn/server.conf &
 
-if [[ -n $IS_INITIAL ]]; then
+# We'll control clients creation ourselves, no need to create initial one.
+#if [[ -n $IS_INITIAL ]]; then
     # By some strange reason we need to do echo command to get to the next command
-    echo " "
+#    echo " "
 
     # Generate client config
-    ./genclient.sh $@
-fi
+#    ./genclient.sh $@
+#fi
 
 tail -f /dev/null
