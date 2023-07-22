@@ -3,11 +3,11 @@ from flask import send_file, abort
 from flask import Response
 import json
 import os
-from variables import *
+from .variables import *
 import logging
 
 def api_app():
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
 
     logging.basicConfig(format="[%(asctime)s] %(process)s %(levelname)s %(message)s", level=logging.DEBUG)
 
