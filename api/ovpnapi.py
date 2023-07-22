@@ -6,7 +6,8 @@ import os
 from variables import *
 import logging
 
-app = Flask
+app = Flask(__name__)
+
 logging.basicConfig(format="[%(asctime)s] %(process)s %(levelname)s %(message)s", level=logging.DEBUG)
 
 # Get client by id
