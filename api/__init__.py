@@ -21,7 +21,7 @@ def api_app():
         logger.info(f"Request for client id {client_id} received.")
         if os.path.isfile(client_file):
             logger.info(f"Sending file client id {client_id} received.")
-            send_file(client_file)
+            return send_file(client_file)
         else:
             logger.error(f"Config file for client id {client_id} was not found.")
             logger.debug(f"Client file name {client_file} not found.")
