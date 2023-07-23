@@ -22,6 +22,7 @@ RUN apk add --no-cache openvpn easy-rsa bash netcat-openbsd zip dumb-init python
     ln -s /usr/share/easy-rsa/easyrsa /usr/bin/easyrsa && \
     mkdir -p ${APP_PERSIST_DIR} && \
     pip3 install Flask && \
+    pip3 install waitress && \
 #   cd ${APP_PERSIST_DIR} && \
 #   easyrsa init-pki && \
 #   easyrsa gen-dh && \

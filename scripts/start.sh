@@ -76,6 +76,8 @@ $APP_INSTALL_PATH/version.sh
 
 # Need to feed key password
 openvpn --config /etc/openvpn/server.conf &
+# Starting WSGI server for API 
+waitress-serve --port=5000 --call api:api_app &
 
 # We'll control clients creation ourselves, no need to create initial one.
 #if [[ -n $IS_INITIAL ]]; then
