@@ -79,6 +79,7 @@ EOF
     easyrsa gen-crl
 
     cp /opt/Dockovpn_data/pki/crl.pem /etc/openvpn
-
+    rm -rf clients/$CLIENT_ID
+    
     cd "$APP_INSTALL_PATH"
 }
