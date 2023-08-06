@@ -4,11 +4,12 @@ from flask import Response
 import json
 import os
 from .variables import *
+from .auth import apikey_required
 import logging
 
 def api_app():
     app = Flask(__name__, instance_relative_config=True)
-
+    
     logging.basicConfig(format="[%(asctime)s] %(process)s %(levelname)s %(message)s", level=logging.DEBUG)
     # get waitress logger
     logger = logging.getLogger('waitress')
@@ -16,6 +17,7 @@ def api_app():
     
     # Get client by id
     @app.get('/client/<client_id>')
+    @apikey_required
     def get_client(client_id):
         client_file = f'{CLIENTS_PATH}/{client_id}/{client_id}.ovpn'
         logger.info(f"Request for client id {client_id} received.")
@@ -25,10 +27,11 @@ def api_app():
         else:
             logger.error(f"Config file for client id {client_id} was not found.")
             logger.debug(f"Client file name {client_file} not found.")
-            abort(404)
+            return Response(json.dumps({"message":f"Config file for client id {client_id} was not found."}), status=404, mimetype='application/json')
 
     # Create new client
     @app.post('/client')
+    @apikey_required
     def create_client():
         logger.info("Request to create client received.")
         client_id = os.popen(GENSCRIPT).read().strip()
@@ -37,6 +40,7 @@ def api_app():
         return Response(json.dumps(data), status=201, mimetype='application/json') 
 
     @app.delete('/client/<client_id>')
+    @apikey_required
     def revoke_client(client_id):
         client_file = f'{CLIENTS_PATH}/{client_id}/{client_id}.ovpn'
         logger.info(f"Request to remove client id {client_id} received.")
@@ -45,6 +49,6 @@ def api_app():
             os.system(f"{RMSCRIPT} {client_id}")
         else:
             logger.error(f"Client id {client_id} not found.")
-            abort(404)
+            return Response(json.dumps({"message":f"Client with id {client_id} was not found."}), status=404, mimetype='application/json')
         return Response(status=200)
     return app
