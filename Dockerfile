@@ -34,7 +34,7 @@ RUN apk add --no-cache openvpn easy-rsa bash netcat-openbsd zip dumb-init python
     cp config/server.conf /etc/openvpn/server.conf
 
 COPY scripts .
-
+COPY api api
 
 EXPOSE 1194/udp
 EXPOSE 5000/tcp
