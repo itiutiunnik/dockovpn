@@ -34,10 +34,13 @@ def api_app():
     @apikey_required
     def create_client():
         logger.info("Request to create client received.")
-        client_id = os.popen(GENSCRIPT).read().strip()
-        logger.info(f"Client with id {client_id} created.")
-        data = {'client_id':client_id}
-        return Response(json.dumps(data), status=201, mimetype='application/json') 
+        try:
+            client_id = os.popen(GENSCRIPT).read().strip()
+            logger.info(f"Client with id {client_id} created.")
+            data = {'message':'New client successfully created.','client_id':client_id}
+            return Response(json.dumps(data), status=201, mimetype='application/json') 
+        except:
+            return Response(json.dumps({'massage':'Internal Error occured.','client_id':0}), status=500, mimetype='application/json') 
 
     @app.delete('/client/<client_id>')
     @apikey_required
